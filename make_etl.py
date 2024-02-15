@@ -3,11 +3,11 @@ from pyspark.sql.functions import col, when, avg, dense_rank
 from pyspark.sql.window import Window
 from pyspark import SparkFiles
 
-# Initialiser la session Spark
+# Initialisation la session Spark
 spark = SparkSession.builder.appName("AnalyseRetardsVols").getOrCreate()
 
-# Ajouter le fichier token Kaggle à l'environnement Spark
-chemin_token_kaggle = "/home/votre_utilisateur/.kaggle/kaggle.json"
+# Ajout du fichier token Kaggle à l'environnement Spark
+chemin_token_kaggle = "/home/hadoop/.kaggle/kaggle.json"
 spark.sparkContext.addFile("file://" + chemin_token_kaggle)
 
 # Chargement et exploration des données depuis Kaggle
@@ -15,13 +15,13 @@ kaggle_dataset_url = "kaggle datasets download -d usdot/flight-delays -p /conten
 spark.sparkContext.addFile(kaggle_dataset_url)
 donnees_vols = spark.read.csv("file://" + SparkFiles.get("flight-delays.zip"), header=True, inferSchema=True)
 
-# Afficher les 10 premières lignes et imprimer le schéma pour comprendre la structure des données
+# Affichage les 10 premières lignes et imprimer le schéma pour comprendre la structure des données
 donnees_vols.show(10)
 donnees_vols.printSchema()
 
 # Nettoyage des données avec l'API DataFrame
 donnees_vols = donnees_vols.withColumn("retardé", when(col("ARRIVAL_DELAY") > 15, 1).otherwise(0))
-donnees_vols = donnees_vols.fillna(0, subset=["ARRIVAL_DELAY"])  # Gérer les valeurs manquantes
+donnees_vols = donnees_vols.fillna(0, subset=["ARRIVAL_DELAY"])  # pour gerer les valeurs manquantes
 
 # Agrégation et regroupement des données
 retard_moyen_par_compagnie = donnees_vols.groupBy("AIRLINE").agg(avg("ARRIVAL_DELAY").alias("retard_moyen"))
@@ -42,7 +42,7 @@ vols_par_compagnie = donnees_vols_rdd.map(lambda x: (x["AIRLINE"], 1)).reduceByK
 donnees_vols_partitionnees = donnees_vols.repartition("DESTINATION_AIRPORT")
 
 # Analyse et rapports
-# Fournir des insights basés sur les opérations effectuées
+# Insights basés sur les opérations effectuées
 
 # Analyse : Retard moyen par compagnie aérienne
 retard_moyen_par_compagnie.show()
