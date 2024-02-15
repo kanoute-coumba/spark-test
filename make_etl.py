@@ -63,8 +63,6 @@ vols_par_compagnie.collect()
 # Analyse : Partitionnement par aéroport de destination
 donnees_vols_partitionnees.show()
 
-# ...
-
-# Arrêter la session Spark
+# Arrêt de la session Spark
 spark.stop()
 
