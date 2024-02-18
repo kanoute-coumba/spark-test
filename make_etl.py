@@ -50,14 +50,18 @@ df_sorted = df_grouped.orderBy(df_grouped["mean_delay"].desc())
 # Et on affiche les 10 premiers aéroports les plus retardés
 df_sorted.limit(10).show()
 
-'''
-
 # Opérations avancées avec les fonctions de fenêtre
 # Classer les aéroports par le nombre de vols de départ
-window_spec = Window.partitionBy("aeroport_depart").orderBy("retard_depart")
-df_ranked = df.select("aeroport_depart", "retard_depart", window.rank().over(window_spec).alias("rang"))
-df_ranked.show(10)
+# On définit une fenêtre pour trier les aéroports par nombre de vols décroissant
+window_spec = Window.orderBy(desc(col("FLIGHT_NUMBER")))
+# On calcule le nombre de vols par aéroport de départ
+df_count = df.groupBy("ORIGIN_AIRPORT").agg(count("FLIGHT_NUMBER").alias("count"))
+# On joute un numéro de rang pour chaque aéroport de départ
+df_ranked = df_count.withColumn("rank", row_number().over(window_spec))
+# Puis on affiche les 10 premiers aéroports par nombre de vols de départ
+df_ranked.filter(df_ranked["rank"] <= 10).orderBy(df_ranked["rank"]).show()
 
+'''
 # Opérations sur les RDD
 # Convertir le DataFrame en RDD
 rdd = df.rdd
