@@ -13,14 +13,15 @@ df = spark.read.csv("datasets/flights.csv", header=True, inferSchema=True)
 # On affiche les 10 premières lignes et imprime le schéma pour comprendre la structure du jeu de données
 df.show(10)
 df.printSchema()
-'''
+
 # Nettoyage des données avec l'API DataFrame
 # On ajoute une nouvelle colonne indiquant si un vol a été retardé de plus de 15 minutes
-df = df.withColumn("retard_plus_15", when(col("retard_depart") > 15, 1).otherwise(0))
-
+df = df.withColumn("retard_plus_15", when(col("DEPARTURE_DELAY") > 15, 1).otherwise(0))
 # on gere les valeurs manquantes de manière appropriée dans les colonnes critiques pour l'analyse
-df = df.dropna(subset=["retard_depart", "retard_arrivee", "compagnie", "aeroport_depart"])
-
+df_cleaned = df.dropna()
+df_filled = df.fillna(value=0)
+df_imputed = df.na.fill(df.select([avg(c).alias(c) for c in df.columns]).first())
+'''
 # Agrégation et regroupement
 # Calculer la moyenne du retard par compagnie et par aéroport de départ
 df_grouped_by_compagnie = df.groupBy("compagnie").agg(avg("retard_depart").alias("moyenne_retard_depart"))
