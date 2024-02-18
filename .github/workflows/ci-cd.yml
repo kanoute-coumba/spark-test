@@ -1,4 +1,4 @@
-name: Spark CI/CD
+name: Spark ETL CI/CD
 
 on:
   push:
@@ -6,23 +6,31 @@ on:
       - master
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
+    - name: Cache Python dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
-      - name: Run Spark Code
-        run: python make_etl.py
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.12
 
-      - name: Deploy to VM
-        run: |
-          scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} make_etl.py hadoop@172.31.250.114:/home/hadoop/project
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install pyspark
+
+    - name: Run the script
+      run: spark-submit ..\make_etl.py
