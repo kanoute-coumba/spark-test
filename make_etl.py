@@ -38,14 +38,19 @@ df_imputed.show()
 df_grouped = df.groupBy("AIRLINE", "ORIGIN_AIRPORT").agg(avg("DEPARTURE_DELAY").alias("mean_delay"))
 # On affiche le résultat
 df_grouped.show()
-# Sous forme de tableau - beaucoup plus lisible
-df_grouped.orderBy("AIRLINE", "ORIGIN_AIRPORT").show()
+# Triée par compagnie et par aeroport de depart  
+df_grouped.orderBy("AIRLINE", "ORIGIN_AIRPORT").show(df_grouped.count(), truncate=False)
 
-'''
 # Tri et classement
 # Liste les 10 premiers aéroports les plus retardés
-df_sorted = df.orderBy("retard_depart", ascending=False)
-df_sorted.show(10)
+# on calcule d'abord la moyenne du retard par aéroport de départ
+df_grouped = df.groupBy("ORIGIN_AIRPORT").agg(avg("DEPARTURE_DELAY").alias("mean_delay"))
+# On trie les aéroports par retard moyen décroissant
+df_sorted = df_grouped.orderBy(df_grouped["mean_delay"].desc())
+# Et on affiche les 10 premiers aéroports les plus retardés
+df_sorted.limit(10).show()
+
+'''
 
 # Opérations avancées avec les fonctions de fenêtre
 # Classer les aéroports par le nombre de vols de départ
