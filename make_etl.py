@@ -20,6 +20,7 @@ df = df.withColumn("retard_plus_15", when(col("DEPARTURE_DELAY") > 15, 1).otherw
 # on gere les valeurs manquantes de manière appropriée dans les colonnes critiques pour l'analyse
 df_cleaned = df.dropna()
 df_filled = df.fillna(value=0)
+'''
 # Remplir les valeurs manquantes avec les statistiques agrégées
 # D'abord on calcule les statistiques agrégées pour chaque colonne
 df_stats = df.select([avg(c).alias(c) for c in df.columns])
@@ -31,14 +32,16 @@ stats_dict = row_stats.asDict()
 df_imputed = df.na.fill(stats_dict)
 # le résultat
 df_imputed.show()
-
-
 '''
 # Agrégation et regroupement
 # Calculer la moyenne du retard par compagnie et par aéroport de départ
-df_grouped_by_compagnie = df.groupBy("compagnie").agg(avg("retard_depart").alias("moyenne_retard_depart"))
-df_grouped_by_depart = df.groupBy("aeroport_depart").agg(avg("retard_depart").alias("moyenne_retard_depart"))
+df_grouped = df.groupBy("AIRLINE", "ORIGIN_AIRPORT").agg(avg("DEPARTURE_DELAY").alias("mean_delay"))
+# On affiche le résultat
+df_grouped.show()
+# Sous forme de tableau - beaucoup plus lisible
+df_grouped.orderBy("AIRLINE", "ORIGIN_AIRPORT").show()
 
+'''
 # Tri et classement
 # Liste les 10 premiers aéroports les plus retardés
 df_sorted = df.orderBy("retard_depart", ascending=False)
