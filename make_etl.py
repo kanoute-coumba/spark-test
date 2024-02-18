@@ -64,12 +64,14 @@ df_ranked.filter(df_ranked["rank"] <= 10).orderBy(df_ranked["rank"]).show()
 # Opérations sur les RDD
 # Convertir le DataFrame en RDD
 rdd = df.rdd
-'''
-# Effectuer une opération map-reduce pour compter le nombre de vols par compagnie
-vols_par_compagnie = rdd.map(lambda row: (row.compagnie, 1)).reduceByKey(lambda a, b: a + b)
-vols_par_compagnie_df = spark.createDataFrame(vols_par_compagnie, ["compagnie", "vols"])
-vols_par_compagnie_df.show()
 
+# Effectuer une opération map-reduce pour compter le nombre de vols par compagnie
+# On calcule le nombre de vols par compagnie aérienne
+df_grouped = df.groupBy("AIRLINE").agg(count("FLIGHT_NUMBER").alias("count"))
+# On affiche les résultats
+df_grouped.show()
+
+'''
 # Partitionnement
 # Partitionner les données en fonction d'une clé appropriée, par exemple l'aéroport d'arrivée
 df_partitioned = df.repartition(10, "aeroport_arrivee")
