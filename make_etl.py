@@ -20,7 +20,19 @@ df = df.withColumn("retard_plus_15", when(col("DEPARTURE_DELAY") > 15, 1).otherw
 # on gere les valeurs manquantes de manière appropriée dans les colonnes critiques pour l'analyse
 df_cleaned = df.dropna()
 df_filled = df.fillna(value=0)
-df_imputed = df.na.fill(df.select([avg(c).alias(c) for c in df.columns]).first())
+# Remplir les valeurs manquantes avec les statistiques agrégées
+# D'abord on calcule les statistiques agrégées pour chaque colonne
+df_stats = df.select([avg(c).alias(c) for c in df.columns])
+# On récupére la première ligne du DataFrame de statistiques agrégées
+row_stats = df_stats.first()
+# Conversion de la ligne en un dictionnaire
+stats_dict = row_stats.asDict()
+# On emplie les valeurs manquantes avec les statistiques agrégées
+df_imputed = df.na.fill(stats_dict)
+# le résultat
+df_imputed.show()
+
+
 '''
 # Agrégation et regroupement
 # Calculer la moyenne du retard par compagnie et par aéroport de départ
