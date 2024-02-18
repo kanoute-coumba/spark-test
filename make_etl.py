@@ -3,6 +3,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, when, avg, count, window
 from pyspark.sql.window import Window
+from pyspark.sql.functions import desc, row_number
 
 # Initialisons la session Spark
 spark = SparkSession.builder.appName("Analyse des retards de vol").getOrCreate()
@@ -62,24 +63,28 @@ df_grouped.show()
 # Partitionnement
 # Partitionner les données en fonction d'une clé appropriée, par exemple l'aéroport d'arrivée
 # On définit une fenêtre pour partitionner les données par aéroport d'arrivée
-window_spec = Window.partitionBy("DESTINATION_AIRPORT")
-# Pour btenir le nombre de vols pour chaque ligne
-df_partitioned = df.withColumn("count", count("FLIGHT_NUMBER").over(window_spec))
-# Enfin on ffiche les résultats
-df_partitioned.show()
+window_spec = Window.partitionBy("DESTINATION_AIRPORT").orderBy(desc("count"))
+# On regroupe les données par aéroport d'arrivée et on compte le nombre de vols
+df_grouped = df.groupBy("DESTINATION_AIRPORT").agg(count("FLIGHT_NUMBER").alias("count"))
+# On ajoute un numéro de rang pour chaque ligne de la fenêtre de partitionnement
+df_ranked = df_grouped.withColumn("rank", row_number().over(window_spec))
+# Enfin on affiche les résultats
+df_ranked.orderBy(["DESTINATION_AIRPORT", "rank"], ascending=[True, False]).show()
 
-'''
 # Analyse et rapport
 # Fournir des insights sur les données via les opérations effectuées, mettant en évidence les résultats intéressants
-print("Moyenne du retard par compagnie:")
-df_grouped_by_compagnie.show()
-
-print("Moyenne du retard par aéroport de départ:")
-df_grouped_by_depart.show()
-
-print("Nombre de vols par compagnie:")
-vols_par_compagnie_df.show()
-
-print("Top 10 des aéroports les plus retardés:")
-df_ranked.filter(col("rang") <= 10).show()
-'''
+# Retards les plus fréquents
+df_delays = df.groupBy("DEPARTURE_DELAY").count().orderBy(desc("count"))
+df_delays.show(10)
+# Retards moyens par compagnie aérienne
+df_airline_delays = df.groupBy("AIRLINE").agg(avg("DEPARTURE_DELAY").alias("mean_delay")).orderBy(desc("mean_delay"))
+df_airline_delays.show(10)
+# Retards moyens par aéroport de départ
+df_origin_airport_delays = df.groupBy("ORIGIN_AIRPORT").agg(avg("DEPARTURE_DELAY").alias("mean_delay")).orderBy(desc("mean_delay"))
+df_origin_airport_delays.show(10)
+# Retards moyens par aéroport d'arrivée
+df_destination_airport_delays = df.groupBy("DESTINATION_AIRPORT").agg(avg("DEPARTURE_DELAY").alias("mean_delay")).orderBy(desc("mean_delay"))
+df_destination_airport_delays.show(10)
+# Retards moyens par jour de la semaine
+df_day_of_week_delays = df.groupBy("DAY_OF_WEEK").agg(avg("DEPARTURE_DELAY").alias("mean_delay")).orderBy(desc("mean_delay"))
+df_day_of_week_delays.show(10)
