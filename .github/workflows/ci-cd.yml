@@ -33,4 +33,9 @@ jobs:
         pip install pyspark
 
     - name: Run the script
+<<<<<<< HEAD
       run: spark-submit ..\make_etl.py
+=======
+      run: spark-submit make_etl.py
+      working-directory: ${{ github.workspace }}
+>>>>>>> develop
