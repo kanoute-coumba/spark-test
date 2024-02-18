@@ -61,11 +61,10 @@ df_ranked = df_count.withColumn("rank", row_number().over(window_spec))
 # Puis on affiche les 10 premiers aéroports par nombre de vols de départ
 df_ranked.filter(df_ranked["rank"] <= 10).orderBy(df_ranked["rank"]).show()
 
-'''
 # Opérations sur les RDD
 # Convertir le DataFrame en RDD
 rdd = df.rdd
-
+'''
 # Effectuer une opération map-reduce pour compter le nombre de vols par compagnie
 vols_par_compagnie = rdd.map(lambda row: (row.compagnie, 1)).reduceByKey(lambda a, b: a + b)
 vols_par_compagnie_df = spark.createDataFrame(vols_par_compagnie, ["compagnie", "vols"])
