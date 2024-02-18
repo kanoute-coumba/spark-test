@@ -8,7 +8,7 @@ from pyspark.sql.window import Window
 spark = SparkSession.builder.appName("Analyse des retards de vol").getOrCreate()
 
 # Chargeons le jeu de données dans un DataFrame Spark
-df = spark.read.csv("flights.csv", header=True, inferSchema=True)
+df = spark.read.csv("datasets/flights.csv", header=True, inferSchema=True)
 
 # On affiche les 10 premières lignes et imprime le schéma pour comprendre la structure du jeu de données
 df.show(10)
