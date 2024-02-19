@@ -10,13 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATASET_PATH: datasets/flights.csv
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout repository
       uses: actions/checkout@v2
-      with:
-        path: .
+
+    - name: Install Kaggle CLI
+      run: pip install kaggle
+
+    - name: Download dataset from Kaggle
+      run: kaggle datasets download -d usdot/flight-delays -p ./datasets
+
+    - name: Unzip dataset
+      run: unzip ./datasets/flight-delays.zip -d ./datasets
+
+    - name: Set dataset path environment variable
+      run: echo "DATASET_PATH=./datasets/flights.csv" >> $GITHUB_ENV
 
     - name: Cache Python dependencies
       uses: actions/cache@v2

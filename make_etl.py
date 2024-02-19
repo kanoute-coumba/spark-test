@@ -10,9 +10,9 @@ from pyspark.sql.functions import desc, row_number
 dataset_path = os.environ.get("DATASET_PATH", "/datasets/flights.csv")
 # Initialisons la session Spark
 spark = SparkSession.builder.appName("Analyse des retards de vol").getOrCreate()
-
+'''
 # Chemin complet du fichier CSV
-csv_path = os.path.join(os.getcwd(), dataset_path)
+# csv_path = os.path.join(os.getcwd(), dataset_path)
 
 print("###################################################################")
 print("Chemin complet du fichier CSV :", csv_path)
@@ -21,9 +21,9 @@ print("###################################################################")
 
 # Chargeons le fichier CSV dans un DataFrame Spark
 df = spark.read.csv(csv_path, header=True, inferSchema=True)
-
+'''
 # Chargeons le jeu de données dans un DataFrame Spark
-# df = spark.read.csv("datasets/flights.csv", header=True, inferSchema=True)
+df = spark.read.csv("datasets/flights.csv", header=True, inferSchema=True)
 
 # On affiche les 10 premières lignes et imprime le schéma pour comprendre la structure du jeu de données
 df.show(10)
