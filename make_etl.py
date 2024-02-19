@@ -1,10 +1,13 @@
 # coding: utf-8
 # Importation des bibliothèques nécessaires
+import os
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, when, avg, count, window
 from pyspark.sql.window import Window
 from pyspark.sql.functions import desc, row_number
 
+# Pour le github Actions : variable d'environnement pour définir le chemin du dataset
+dataset_path = os.environ.get("DATASET_PATH", "/datasets/flights.csv")
 # Initialisons la session Spark
 spark = SparkSession.builder.appName("Analyse des retards de vol").getOrCreate()
 
