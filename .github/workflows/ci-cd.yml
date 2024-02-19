@@ -54,3 +54,12 @@ jobs:
     - name: Run the script
       run: spark-submit make_etl.py
       working-directory: ${{ github.workspace }}
+
+    - name: Copy make_etl.py to VM
+      uses: appleboy/scp-action@v0.4.0
+      with:
+        host: 172.31.250.154
+        username: kanouch
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: make_etl.py
+        target: /hone/kanouch/make_etl.py
