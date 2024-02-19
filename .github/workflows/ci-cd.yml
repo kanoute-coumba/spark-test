@@ -55,6 +55,16 @@ jobs:
       run: spark-submit make_etl.py
       working-directory: ${{ github.workspace }}
 
+    - name: Debug VPN Connection
+      run: |
+        echo "VPN Connection Info:"
+        echo "Host: ${{ secrets.HOST }}"
+        echo "Username: ${{ secrets.USERNAME }}"
+        echo "Port: ${{ secrets.PORT }}"
+  
+        # Ping du serveur distant
+        ping -c 5 ${{ secrets.HOST }}
+
     - name: copy file via ssh key
       uses: appleboy/scp-action@v0.1.7
       with:
