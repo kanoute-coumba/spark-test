@@ -15,6 +15,8 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
+      with:
+        path: datasets
 
     - name: Cache Python dependencies
       uses: actions/cache@v2

@@ -14,10 +14,10 @@ spark = SparkSession.builder.appName("Analyse des retards de vol").getOrCreate()
 # Chemin complet du fichier CSV
 csv_path = os.path.join(os.getcwd(), dataset_path)
 
-###################################################################
+print("###################################################################")
 print("Chemin complet du fichier CSV :", csv_path)
 print("Répertoire de travail actuel :", os.getcwd())
-###################################################################
+print("###################################################################")
 
 # Chargeons le fichier CSV dans un DataFrame Spark
 df = spark.read.csv(csv_path, header=True, inferSchema=True)
