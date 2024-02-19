@@ -26,7 +26,7 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Set dataset path environment variable
-      run: echo "DATASET_PATH=${{ secrets.DATASET_PATH }}" >> $GITHUB_ENV
+      run: echo "DATASET_PATH=${{ env.DATASET_PATH }}" >> $GITHUB_ENV
 
     - name: Set up Python
       uses: actions/setup-python@v2
