@@ -57,9 +57,8 @@ jobs:
 
     - name: Copy make_etl.py to VM
       run: |
-        scp -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} make_etl.py ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_PATH }}/make_etl.py
+        scp make_etl.py ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_PATH }}
       env:
-        SSH_PRIVATE_KEY_PATH: ${{ secrets.SSH_PRIVATE_KEY_PATH }}
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         SSH_HOST: ${{ secrets.SSH_HOST }}
         REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
