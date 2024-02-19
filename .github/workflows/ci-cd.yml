@@ -56,10 +56,11 @@ jobs:
       working-directory: ${{ github.workspace }}
 
     - name: Copy make_etl.py to VM
-      uses: appleboy/scp-action@latest
-      with:
-        host: 172.31.250.154
-        username: kanouch
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: make_etl.py
-        target: /hone/kanouch/make_etl.py
+      run: |
+        scp -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} make_etl.py ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_PATH }}/make_etl.py
+      env:
+        SSH_PRIVATE_KEY_PATH: ${{ secrets.SSH_PRIVATE_KEY_PATH }}
+        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+  
